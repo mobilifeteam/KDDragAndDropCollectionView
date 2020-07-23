@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
 
   s.name         = "KDDragAndDropCollectionViews"
-  s.version      = "TN"
+  s.version      = "1.5.2"
   s.summary      = "Dragging & Dropping data across multiple UICollectionViews"
 
-  s.homepage     = "https://github.com/mmick66/KDDragAndDropCollectionView"
+  s.homepage     = "https://github.com/Bookrhin/KDDragAndDropCollectionView"
 
   s.license      = { :type => "MIT", :file => "LICENSE" }
 
