@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "KDDragAndDropCollectionViews"
-  s.version      = "1.5.2"
+  s.version      = "TN"
   s.summary      = "Dragging & Dropping data across multiple UICollectionViews"
 
   s.homepage     = "https://github.com/mmick66/KDDragAndDropCollectionView"
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.swift_version = "4.2"
   s.platform     = :ios, "9.0"
 
-  s.source       = { :git => "https://github.com/mmick66/KDDragAndDropCollectionView.git", :tag => s.version }
+  s.source       = { :git => "https://github.com/Bookrhin/KDDragAndDropCollectionView", :tag => s.version }
 
   s.source_files = "Classes/*.swift"
 
