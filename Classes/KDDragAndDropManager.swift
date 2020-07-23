@@ -123,6 +123,11 @@ public class KDDragAndDropManager: NSObject, UIGestureRecognizerDelegate {
         return false
         
     }
+    fileprivate func vibrateTicker() {
+           if #available(iOS 10.0, *) {
+               UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+           }
+       }
     
     @objc public func updateForLongPress(_ recogniser : UILongPressGestureRecognizer) -> Void {
         
@@ -136,6 +141,7 @@ public class KDDragAndDropManager: NSObject, UIGestureRecognizerDelegate {
             
             
         case .began :
+            self.vibrateTicker()
             self.canvas.addSubview(bundle.representationImageView)
             sourceDraggable.startDraggingAtPoint(pointOnSourceDraggable)
             
@@ -200,7 +206,7 @@ public class KDDragAndDropManager: NSObject, UIGestureRecognizerDelegate {
             
             
         case .ended :
-            
+            self.vibrateTicker()
             if bundle.sourceDraggableView != bundle.overDroppableView { // if we are actually dropping over a new view.
                 
                 if let droppable = bundle.overDroppableView as? KDDroppable {
