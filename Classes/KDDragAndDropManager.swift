@@ -47,6 +47,7 @@ public protocol KDDroppable {
     func didMoveItem(_ item : AnyObject, inRect rect : CGRect) -> Void
     func didMoveOutItem(_ item : AnyObject) -> Void
     func dropDataItem(_ item : AnyObject, atRect : CGRect) -> Void
+    func removeItem() -> Void
 }
 
 public class KDDragAndDropManager: NSObject, UIGestureRecognizerDelegate {
@@ -207,7 +208,7 @@ public class KDDragAndDropManager: NSObject, UIGestureRecognizerDelegate {
                     sourceDraggable.dragDataItem(bundle.dataItem)
                     
                     let rect = self.canvas.convert(bundle.representationImageView.frame, to: bundle.overDroppableView)
-                    
+                    droppable.removeItem()
                     droppable.dropDataItem(bundle.dataItem, atRect: rect)
                     
                 }

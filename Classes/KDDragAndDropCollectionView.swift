@@ -37,6 +37,7 @@ public protocol KDDragAndDropCollectionViewDataSource : UICollectionViewDataSour
     /* optional */ func collectionView(_ collectionView: UICollectionView, cellIsDroppableAtIndexPath indexPath: IndexPath) -> Bool
     
     /* optional */ func collectionView(_ collectionView: UICollectionView, stylingRepresentationView: UIView) -> UIView?
+     func checkLimitItem() -> Void
 }
 
 extension KDDragAndDropCollectionViewDataSource {
@@ -428,6 +429,11 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
         self.reloadData()
         
     }
-    
+    public func removeItem() {
+           guard let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource else {
+               return
+           }
+           dragDropDataSource.checkLimitItem()
+       }
     
 }
