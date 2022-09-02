@@ -29,15 +29,15 @@ public protocol KDDragAndDropCollectionViewDataSource : UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, indexPathForDataItem dataItem: AnyObject) -> IndexPath?
     func collectionView(_ collectionView: UICollectionView, dataItemForIndexPath indexPath: IndexPath) -> AnyObject
     
-    func collectionView(_ collectionView: UICollectionView, moveDataItemFromIndexPath from: IndexPath, toIndexPath to : IndexPath) -> Void
-    func collectionView(_ collectionView: UICollectionView, insertDataItem dataItem : AnyObject, atIndexPath indexPath: IndexPath) -> Void
-    func collectionView(_ collectionView: UICollectionView, deleteDataItemAtIndexPath indexPath: IndexPath) -> Void
+    func collectionView(_ collectionView: UICollectionView, moveDataItem dataItem: AnyObject, fromIndexPath: IndexPath, toIndexPath: IndexPath) -> Void
+    func collectionView(_ collectionView: UICollectionView, insertDataItem dataItem: AnyObject, atIndexPath indexPath: IndexPath) -> Void
+    func collectionView(_ collectionView: UICollectionView, deleteDataItem dataItem: AnyObject, atIndexPath indexPath: IndexPath) -> Void
     
     /* optional */ func collectionView(_ collectionView: UICollectionView, cellIsDraggableAtIndexPath indexPath: IndexPath) -> Bool
     /* optional */ func collectionView(_ collectionView: UICollectionView, cellIsDroppableAtIndexPath indexPath: IndexPath) -> Bool
     
     /* optional */ func collectionView(_ collectionView: UICollectionView, stylingRepresentationView: UIView) -> UIView?
-     func checkLimitItem() -> Void
+    func checkLimitItem() -> Void
 }
 
 extension KDDragAndDropCollectionViewDataSource {
@@ -150,22 +150,16 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
     
     public func dragDataItem(_ item : AnyObject) -> Void {
         
-        guard let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource else {
-            return
-        }
+        guard
+            let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource,
+            let existngIndexPath = dragDropDataSource.collectionView(self, indexPathForDataItem: item)
+        else { return }
         
-        guard let existngIndexPath = dragDropDataSource.collectionView(self, indexPathForDataItem: item) else {
-            return
-            
-        }
-        
-        dragDropDataSource.collectionView(self, deleteDataItemAtIndexPath: existngIndexPath)
+        dragDropDataSource.collectionView(self, deleteDataItem: item, atIndexPath: existngIndexPath)
         
         if self.animating {
             self.deleteItems(at: [existngIndexPath])
-        }
-        else {
-            
+        } else {
             self.animating = true
             self.performBatchUpdates({ () -> Void in
                 self.deleteItems(at: [existngIndexPath])
@@ -344,7 +338,7 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
             
             if indexPath.item != existingIndexPath.item {
                 
-                dragDropDS.collectionView(self, moveDataItemFromIndexPath: existingIndexPath, toIndexPath: indexPath)
+                dragDropDS.collectionView(self, moveDataItem: item, fromIndexPath: existingIndexPath, toIndexPath: indexPath)
                 
                 self.animating = true
                 
@@ -377,18 +371,16 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
     
     public func didMoveOutItem(_ item : AnyObject) -> Void {
         
-        guard let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource,
-            let existngIndexPath = dragDropDataSource.collectionView(self, indexPathForDataItem: item) else {
-                
-                return
-        }
+        guard
+            let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource,
+            let existngIndexPath = dragDropDataSource.collectionView(self, indexPathForDataItem: item)
+        else { return }
         
-        dragDropDataSource.collectionView(self, deleteDataItemAtIndexPath: existngIndexPath)
+        dragDropDataSource.collectionView(self, deleteDataItem: item, atIndexPath: existngIndexPath)
         
         if self.animating {
             self.deleteItems(at: [existngIndexPath])
-        }
-        else {
+        } else {
             self.animating = true
             self.performBatchUpdates({ () -> Void in
                 self.deleteItems(at: [existngIndexPath])
@@ -396,13 +388,11 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
                 self.animating = false;
                 self.reloadData()
             })
-            
         }
         
-        if let idx = self.draggingPathOfCellBeingDragged {
-            if let cell = self.cellForItem(at: idx) {
-                cell.isHidden = false
-            }
+        if let idx = self.draggingPathOfCellBeingDragged,
+           let cell = self.cellForItem(at: idx) {
+            cell.isHidden = false
         }
         
         self.draggingPathOfCellBeingDragged = nil
@@ -412,7 +402,6 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
     
     
     public func dropDataItem(_ item : AnyObject, atRect : CGRect) -> Void {
-        
         // show hidden cell
         if  let index = draggingPathOfCellBeingDragged,
             let cell = self.cellForItem(at: index), cell.isHidden == true {
@@ -423,17 +412,13 @@ open class KDDragAndDropCollectionView: UICollectionView, KDDraggable, KDDroppab
         }
         
         currentInRect = nil
-        
-        self.draggingPathOfCellBeingDragged = nil
-        
-        self.reloadData()
-        
+        draggingPathOfCellBeingDragged = nil
+        reloadData()
     }
-    public func removeItem() {
-           guard let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource else {
-               return
-           }
-           dragDropDataSource.checkLimitItem()
-       }
     
+    public func removeItem() {
+        guard let dragDropDataSource = self.dataSource as? KDDragAndDropCollectionViewDataSource
+        else { return }
+        dragDropDataSource.checkLimitItem()
+    }
 }
